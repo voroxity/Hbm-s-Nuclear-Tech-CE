@@ -636,11 +636,6 @@ public class ModEventHandler {
             PacketThreading.createSendToDimensionThreadedPacket(new SurveyPacket(cur), dim);
         }
         BossSpawnHandler.rollTheDice(event.world);
-        for (Entity e : event.world.loadedEntityList) {
-            if (e instanceof EntityItem) {
-                HazardSystem.updateDroppedItem((EntityItem) e);
-            }
-        }
     }
 
     //mlbv: concurrent workers are safe as long as they don't interfere

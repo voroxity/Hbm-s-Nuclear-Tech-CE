@@ -7,6 +7,7 @@ import com.hbm.items.ModItems;
 import com.hbm.items.tool.ItemKeyPin;
 import com.hbm.items.tool.ItemTooling;
 import com.hbm.lib.HBMSoundHandler;
+import com.hbm.lib.Library;
 import com.hbm.main.MainRegistry;
 import com.hbm.packet.toclient.BufPacket;
 import com.hbm.tileentity.IBufPacketReceiver;
@@ -24,7 +25,7 @@ public class TileEntityLockableBase extends TileEntity implements IBufPacketRece
     protected int lock;
     private boolean isLocked = false;
     protected double lockMod = 0.1D;
-    private ByteBuf lastPackedBuf;
+    private long lastPackedBufHash = 0L;
 
     public boolean isLocked() {
         return isLocked;
@@ -161,25 +162,14 @@ public class TileEntityLockableBase extends TileEntity implements IBufPacketRece
         if (world.isRemote) return;
         BufPacket packet = new BufPacket(pos.getX(), pos.getY(), pos.getZ(), this);
         ByteBuf currentBuf = packet.getCompiledBuffer();
-        if (currentBuf.equals(lastPackedBuf)) {
+        long currentHash = Library.fnv1A(currentBuf);
+        if (currentHash == lastPackedBufHash) {
             if (this.world.getTotalWorldTime() % 20 != 0) {
                 packet.releaseBuffer();
                 return;
             }
         }
-        if (lastPackedBuf != null && lastPackedBuf.refCnt() > 0) {
-            lastPackedBuf.release();
-        }
-        this.lastPackedBuf = currentBuf.retainedDuplicate();
+        lastPackedBufHash = currentHash;
         PacketThreading.createAllAroundThreadedPacket(packet, new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        if(lastPackedBuf != null && lastPackedBuf.refCnt() > 0) {
-            lastPackedBuf.release();
-            lastPackedBuf = null;
-        }
     }
 }

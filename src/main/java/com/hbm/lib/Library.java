@@ -28,6 +28,7 @@ import com.hbm.items.ModItems;
 import com.hbm.main.MainRegistry;
 import com.hbm.tileentity.TileEntityMachineBase;
 import com.hbm.util.BobMathUtil;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.HashCommon;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -1914,5 +1915,17 @@ public static boolean canConnect(IBlockAccess world, BlockPos pos, ForgeDirectio
                 return (int) (m >>> 32);
             }
         }
+    }
+
+    public static long fnv1A(ByteBuf buf) {
+        long hash = 0xcbf29ce484222325L;
+        int len = buf.readableBytes();
+        int start = buf.readerIndex();
+        for (int i = 0; i < len; i++) {
+            byte b = buf.getByte(start + i);
+            hash ^= (b & 0xff);
+            hash *= 0x1099511628211L;
+        }
+        return hash;
     }
 }

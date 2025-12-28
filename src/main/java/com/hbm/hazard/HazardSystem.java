@@ -823,10 +823,11 @@ public class HazardSystem {
      *
      * @apiNote entry selection count insensitive; evaluated level may be count-sensitive via modifiers
      */
+    @SuppressWarnings("unused") // called by asm hook
     public static void updateDroppedItem(EntityItem entity) {
-        if (entity.isDead) return;
+        if (entity.world.isRemote || entity.isDead) return;
         ItemStack stack = entity.getItem();
-        if (stack.isEmpty() || stack.getCount() <= 0) return;
+        if (stack.isEmpty()) return;
         for (HazardEntry entry : getHazardsFromStack(stack)) {
             entry.type.updateEntity(entity, IHazardModifier.evalAllModifiers(stack, null, entry.baseLevel, entry.mods));
         }

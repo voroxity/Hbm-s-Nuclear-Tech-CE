@@ -2,6 +2,7 @@ package com.hbm.tileentity;
 
 import com.hbm.api.tile.ILoadedTile;
 import com.hbm.handler.threading.PacketThreading;
+import com.hbm.lib.Library;
 import com.hbm.packet.toclient.BufPacket;
 import com.hbm.sound.AudioWrapper;
 import io.netty.buffer.ByteBuf;
@@ -55,7 +56,7 @@ public class TileEntityLoadedBase extends TileEntity implements ILoadedTile, IBu
 	public float getVolume(float baseVolume) {
 		return muffled ? baseVolume * 0.1F : baseVolume;
 	}
-	private ByteBuf lastPackedBuf;
+	private long lastPackedBufHash = 0L;
 
 	/**
 	 * {@inheritDoc}
@@ -94,25 +95,14 @@ public class TileEntityLoadedBase extends TileEntity implements ILoadedTile, IBu
         // In my testing, this can be reliably reproduced with a full fluid barrel, for instance.
         // I think it might be fixable by doing something with getDescriptionPacket() and onDataPacket(),
         // but this sidesteps the problem for the mean time.
-        if (preBuf.equals(lastPackedBuf)) {
+        long preHash = Library.fnv1A(preBuf);
+        if (preHash == lastPackedBufHash) {
             if (this.world.getTotalWorldTime() % 20 != 0) {
                 packet.releaseBuffer();
                 return;
             }
         }
-        if (lastPackedBuf != null && lastPackedBuf.refCnt() > 0) {
-            lastPackedBuf.release();
-        }
-        this.lastPackedBuf = preBuf.retainedDuplicate();
+        lastPackedBufHash = preHash;
         PacketThreading.createAllAroundThreadedPacket(packet, new NetworkRegistry.TargetPoint(this.world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
-    }
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        if(lastPackedBuf != null && lastPackedBuf.refCnt() > 0) {
-            lastPackedBuf.release();
-            lastPackedBuf = null;
-        }
     }
 }
