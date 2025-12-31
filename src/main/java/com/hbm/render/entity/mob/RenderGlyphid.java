@@ -9,13 +9,13 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 
 @AutoRegister(entity = EntityGlyphid.class, factory = "FACTORY")
 @AutoRegister(entity = EntityGlyphidBehemoth.class, factory = "FACTORY")
@@ -34,39 +34,41 @@ public class RenderGlyphid extends RenderLiving<EntityGlyphid> {
     public RenderGlyphid(RenderManager renderManager) {
         super(renderManager, new ModelGlyphid(), 1.0F);
         this.shadowOpaque = 0.0F;
-    }
-
-    private static boolean isInfected(EntityGlyphid g) {
-        return g.getDataManager().get(EntityGlyphid.SUBTYPE) == EntityGlyphid.TYPE_INFECTED;
+        this.addLayer(new LayerInfectionOverlay(this));
     }
 
     @Override
     protected ResourceLocation getEntityTexture(EntityGlyphid glyphid) {
-        return isInfected(glyphid) ? glyphid_infested_tex : glyphid.getSkin();
+        return glyphid.getSkin();
     }
 
-    @Override
-    public void doRender(EntityGlyphid entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        final boolean infected = isInfected(entity);
+    private static final class LayerInfectionOverlay implements LayerRenderer<EntityGlyphid> {
+        private final RenderGlyphid renderer;
 
-        final int prevActiveTex = RenderUtil.getActiveTextureUnitEnum();
-        final boolean prevBlend = RenderUtil.isBlendEnabled();
-        final boolean prevAlphaTest = RenderUtil.isAlphaEnabled();
-        final boolean prevCull = RenderUtil.isCullEnabled();
+        private LayerInfectionOverlay(RenderGlyphid renderer) {
+            this.renderer = renderer;
+        }
 
-        if (infected) {
+        @Override
+        public void doRenderLayer(EntityGlyphid entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+            if (!(entity.getDataManager().get(EntityGlyphid.SUBTYPE) == EntityGlyphid.TYPE_INFECTED) || entity.isInvisible()) {
+                return;
+            }
+            boolean prevBlend = RenderUtil.isBlendEnabled();
+            boolean prevAlphaTest = RenderUtil.isAlphaEnabled();
             GlStateManager.enableBlend();
             GlStateManager.disableAlpha();
             GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
-            GlStateManager.setActiveTexture(GL13.GL_TEXTURE0);
-        }
-        super.doRender(entity, x, y, z, entityYaw, partialTicks);
-        if (infected) {
+            renderer.bindTexture(glyphid_infested_tex);
+            ModelBase model = renderer.getMainModel();
+            model.render(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
             if (prevAlphaTest) GlStateManager.enableAlpha(); else GlStateManager.disableAlpha();
             if (prevBlend) GlStateManager.enableBlend(); else GlStateManager.disableBlend();
-            if (prevCull) GlStateManager.enableCull(); else GlStateManager.disableCull();
-            GlStateManager.setActiveTexture(prevActiveTex);
-            GlStateManager.color(1f, 1f, 1f, 1f);
+        }
+
+        @Override
+        public boolean shouldCombineTextures() {
+            return true;
         }
     }
 
