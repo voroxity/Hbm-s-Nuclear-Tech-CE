@@ -11,10 +11,11 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerCrateIron extends Container {
 
-private TileEntityCrateIron crate;
+	// mlbv: do not rename this field, it's used in bogosorter's mixin
+	private TileEntityCrateIron diFurnace;
 	
 	public ContainerCrateIron(InventoryPlayer invPlayer, TileEntityCrateIron te) {
-		crate = te;
+		diFurnace = te;
 		
 		for(int i = 0; i < 4; i++)
 		{
@@ -40,11 +41,11 @@ private TileEntityCrateIron crate;
 	
 	@Override
     public ItemStack transferStackInSlot(EntityPlayer player, int index) {
-        return InventoryUtil.transferStack(this.inventorySlots, index, this.crate.inventory.getSlots());
+        return InventoryUtil.transferStack(this.inventorySlots, index, this.diFurnace.inventory.getSlots());
     }
 
 	@Override
 	public boolean canInteractWith(EntityPlayer player) {
-		return crate.isUseableByPlayer(player);
+		return diFurnace.isUseableByPlayer(player);
 	}
 }

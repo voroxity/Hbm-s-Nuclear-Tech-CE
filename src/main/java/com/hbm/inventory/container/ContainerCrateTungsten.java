@@ -11,6 +11,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class ContainerCrateTungsten extends Container {
 
+	// mlbv: do not rename this field, it's shadowed in one of bogosorter's mixin
 	private TileEntityCrateTungsten crate;
 
 	public ContainerCrateTungsten(InventoryPlayer invPlayer, TileEntityCrateTungsten te) {
