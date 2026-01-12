@@ -9,10 +9,10 @@ import java.util.Locale;
 
 import static com.hbm.render.block.BlockBakeFrame.BlockForm.FULL_CUSTOM;
 
-public class BlockConcreteColoredExt extends BlockEnumMeta {
+public class BlockConcreteColoredExt extends BlockEnumMeta<BlockConcreteColoredExt.EnumConcreteType> {
 
-    public BlockConcreteColoredExt(Material material, SoundType type, String name, Class<? extends Enum<?>> enumClass, boolean multiName, boolean multiTex) {
-        super(material, type, name, enumClass, multiName, multiTex);
+    public BlockConcreteColoredExt(Material material, SoundType type, String name, EnumConcreteType[] enumValues, boolean multiName, boolean multiTex) {
+        super(material, type, name, enumValues, multiName, multiTex);
     }
 
     @Override

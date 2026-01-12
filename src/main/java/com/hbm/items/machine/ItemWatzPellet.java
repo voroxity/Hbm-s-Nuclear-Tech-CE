@@ -44,7 +44,7 @@ public class ItemWatzPellet extends ItemEnumMulti<ItemWatzPellet.EnumWatzType> i
     final boolean isDepleted;
 
     public ItemWatzPellet(String s, boolean isDepleted) {
-        super(s, EnumWatzType.class, true, true);
+        super(s, EnumWatzType.VALUES, true, true);
         this.setMaxStackSize(16);
         this.setTranslationKey(s);
         this.setCreativeTab(MainRegistry.controlTab);
@@ -72,7 +72,7 @@ public class ItemWatzPellet extends ItemEnumMulti<ItemWatzPellet.EnumWatzType> i
     }
 
     public static double getEnrichment(ItemStack stack) {
-        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.class, stack.getItemDamage());
+        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.VALUES, stack.getItemDamage());
         return getYield(stack) / num.yield;
     }
 
@@ -95,7 +95,7 @@ public class ItemWatzPellet extends ItemEnumMulti<ItemWatzPellet.EnumWatzType> i
     }
 
     private static void setNBTDefaults(ItemStack stack) {
-        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.class, stack.getItemDamage());
+        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.VALUES, stack.getItemDamage());
         stack.setTagCompound(new NBTTagCompound());
         setYield(stack, num.yield);
     }
@@ -157,7 +157,7 @@ public class ItemWatzPellet extends ItemEnumMulti<ItemWatzPellet.EnumWatzType> i
 
         if (this != ModItems.watz_pellet) return;
 
-        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.class, stack.getItemDamage());
+        EnumWatzType num = EnumUtil.grabEnumSafely(EnumWatzType.VALUES, stack.getItemDamage());
 
         list.add(TextFormatting.GREEN + "Depletion: " + String.format(Locale.US, "%.1f", getDurabilityForDisplay(stack) * 100D) + "%");
 

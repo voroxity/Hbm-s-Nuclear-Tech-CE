@@ -10,10 +10,10 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.Locale;
 // TODO: make BlockConcreteColoredExtStairsSlab if I'll ever manage to meta-fy slabs properly
-public class BlockConcreteColoredExtStairs extends BlockStairsEnumMeta {
+public class BlockConcreteColoredExtStairs extends BlockStairsEnumMeta<BlockConcreteColoredExt.EnumConcreteType> {
 
     public BlockConcreteColoredExtStairs() {
-        super(ModBlocks.concrete_colored_ext, SoundType.STONE, "concrete_colored_ext_stairs", BlockConcreteColoredExt.EnumConcreteType.class, true, true);
+        super(ModBlocks.concrete_colored_ext, SoundType.STONE, "concrete_colored_ext_stairs", BlockConcreteColoredExt.EnumConcreteType.VALUES, true, true);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
     // to be honest, the only reason I'd do a separated class for colored concrete is because of textures - they are named like concrete_red not concrete.red

@@ -140,7 +140,7 @@ public abstract class TileEntityBatteryBase extends TileEntityMachineBase implem
 
         redLow = buf.readShort();
         redHigh = buf.readShort();
-        priority = EnumUtil.grabEnumSafely(ConnectionPriority.class, buf.readByte());
+        priority = EnumUtil.grabEnumSafely(ConnectionPriority.VALUES, buf.readByte());
     }
 
     @Override
@@ -150,7 +150,7 @@ public abstract class TileEntityBatteryBase extends TileEntityMachineBase implem
         this.redLow = nbt.getShort("redLow");
         this.redHigh = nbt.getShort("redHigh");
         this.lastRedstone = nbt.getByte("lastRedstone");
-        this.priority = EnumUtil.grabEnumSafely(ConnectionPriority.class, nbt.getByte("priority"));
+        this.priority = EnumUtil.grabEnumSafely(ConnectionPriority.VALUES, nbt.getByte("priority"));
     }
 
     @Override
@@ -209,7 +209,7 @@ public abstract class TileEntityBatteryBase extends TileEntityMachineBase implem
             int ordinal = this.priority.ordinal();
             ordinal++;
             if (ordinal > ConnectionPriority.HIGH.ordinal()) ordinal = ConnectionPriority.LOW.ordinal();
-            this.priority = EnumUtil.grabEnumSafely(ConnectionPriority.class, ordinal);
+            this.priority = EnumUtil.grabEnumSafely(ConnectionPriority.VALUES, ordinal);
         }
     }
 
@@ -264,7 +264,7 @@ public abstract class TileEntityBatteryBase extends TileEntityMachineBase implem
     public Object[] setPriority(Context context, Arguments args) {
         int newPriority = args.checkInteger(0);
         if (newPriority >= 0 && newPriority <= 2) {
-            priority = EnumUtil.grabEnumSafely(ConnectionPriority.class, newPriority+1);
+            priority = EnumUtil.grabEnumSafely(ConnectionPriority.VALUES, newPriority+1);
             return new Object[] {};
         } else {
             return new Object[] {"Invalid mode"};

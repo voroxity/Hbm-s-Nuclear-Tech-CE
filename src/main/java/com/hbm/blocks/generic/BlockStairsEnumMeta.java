@@ -2,7 +2,6 @@ package com.hbm.blocks.generic;
 
 import com.google.common.collect.ImmutableMap;
 import com.hbm.blocks.ICustomBlockItem;
-import com.hbm.items.IDynamicModels;
 import com.hbm.items.IModelRegister;
 import com.hbm.render.block.BlockBakeFrame;
 import net.minecraft.block.Block;
@@ -37,19 +36,19 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.*;
 
-public class BlockStairsEnumMeta extends BlockGenericStairs implements ICustomBlockItem {
+public class BlockStairsEnumMeta<E extends Enum<E>> extends BlockGenericStairs implements ICustomBlockItem {
 
     public static final PropertyInteger META = PropertyInteger.create("meta", 0, 15);
 
     public final short META_COUNT;
     public final boolean multiName;
     public final boolean multiTexture;
-    public final Class<? extends Enum<?>> blockEnum;
+    public final E[] blockEnum;
 
     protected BlockBakeFrame[] blockFrames;
     protected boolean showMetaInCreative = true;
 
-    public BlockStairsEnumMeta(Block block, SoundType sound, String registryName, Class<? extends Enum<?>> blockEnum, boolean multiName, boolean multiTexture) {
+    public BlockStairsEnumMeta(Block block, SoundType sound, String registryName, E[] blockEnum, boolean multiName, boolean multiTexture) {
         super(block, registryName);
         this.setSoundType(sound);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
@@ -57,14 +56,14 @@ public class BlockStairsEnumMeta extends BlockGenericStairs implements ICustomBl
         this.blockEnum = blockEnum;
         this.multiName = multiName;
         this.multiTexture = multiTexture;
-        this.META_COUNT = (short) blockEnum.getEnumConstants().length;
+        this.META_COUNT = (short) blockEnum.length;
 
         this.blockFrames = generateBlockFrames(registryName);
     }
 
 
     protected BlockBakeFrame[] generateBlockFrames(String registryName) {
-        return Arrays.stream(blockEnum.getEnumConstants())
+        return Arrays.stream(blockEnum)
                 .sorted(Comparator.comparing(Enum::ordinal))
                 .map(Enum::name)
                 .map(name -> {
@@ -129,7 +128,7 @@ public class BlockStairsEnumMeta extends BlockGenericStairs implements ICustomBl
         return base.withProperty(META, meta % META_COUNT);
     }
 
-    public String enumToTranslationKey(Enum<?> value) {
+    public String enumToTranslationKey(E value) {
         return this.getTranslationKey() + "." + value.name().toLowerCase(Locale.US);
     }
 
@@ -162,7 +161,7 @@ public class BlockStairsEnumMeta extends BlockGenericStairs implements ICustomBl
         public String getTranslationKey(ItemStack stack) {
             if (multiName) {
                 int meta = stack.getMetadata() % META_COUNT;
-                Enum<?> val = blockEnum.getEnumConstants()[meta];
+                E val = blockEnum[meta];
                 return enumToTranslationKey(val);
             } else {
                 return this.block.getTranslationKey();

@@ -17,9 +17,9 @@ import com.hbm.inventory.fluid.Fluids;
 import com.hbm.inventory.fluid.tank.FluidTankNTM;
 import com.hbm.inventory.gui.GUIMachineExcavator;
 import com.hbm.inventory.recipes.ShredderRecipes;
+import com.hbm.items.ItemEnums.EnumDrillType;
 import com.hbm.items.ModItems;
 import com.hbm.items.machine.ItemDrillbit;
-import com.hbm.items.ItemEnums.EnumDrillType;
 import com.hbm.items.machine.ItemMachineUpgrade;
 import com.hbm.items.machine.ItemMachineUpgrade.UpgradeType;
 import com.hbm.items.special.ItemBedrockOreBase;
@@ -676,7 +676,7 @@ public class TileEntityMachineExcavator extends TileEntityMachineBase implements
 	public EnumDrillType getInstalledDrill() {
 		ItemStack slotItem = inventory.getStackInSlot(4);
         if(!slotItem.isEmpty() && slotItem.getItem() instanceof ItemDrillbit) {
-			return EnumUtil.grabEnumSafely(EnumDrillType.class, slotItem.getItemDamage());
+			return EnumUtil.grabEnumSafely(EnumDrillType.VALUES, slotItem.getItemDamage());
 		}
 		
 		return null;

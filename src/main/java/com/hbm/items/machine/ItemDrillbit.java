@@ -13,7 +13,7 @@ import java.util.List;
 public class ItemDrillbit extends ItemEnumMulti<ItemEnums.EnumDrillType> {
 
 	public ItemDrillbit(String s) {
-		super(s, ItemEnums.EnumDrillType.class, true, true);
+		super(s, ItemEnums.EnumDrillType.VALUES, true, true);
 	}
 	
 	

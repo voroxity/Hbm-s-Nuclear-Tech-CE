@@ -271,7 +271,7 @@ public class ModEventHandler {
     @SubscribeEvent
     public void onItemPickup(PlayerEvent.ItemPickupEvent event) {
         if(event.getStack().getItem() == ModItems.canned_conserve && EnumUtil.grabEnumSafely(
-                ItemConserve.EnumFoodType.class, event.getStack().getItemDamage()) == ItemConserve.EnumFoodType.JIZZ)
+                ItemConserve.EnumFoodType.VALUES, event.getStack().getItemDamage()) == ItemConserve.EnumFoodType.JIZZ)
             AdvancementManager.grantAchievement(event.player, AdvancementManager.achC20_5);
         if(event.getStack().getItem() == Items.SLIME_BALL)
             AdvancementManager.grantAchievement(event.player, AdvancementManager.achSlimeball);

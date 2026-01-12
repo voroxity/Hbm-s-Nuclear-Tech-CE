@@ -19,7 +19,7 @@ import java.util.List;
 public class ItemConserve extends ItemEnumMultiFood<ItemConserve.EnumFoodType> {
 
     public ItemConserve() {
-        super("canned_conserve", EnumFoodType.class, true, true);
+        super("canned_conserve", EnumFoodType.VALUES, true, true);
     }
 
     @Override
@@ -97,6 +97,8 @@ public class ItemConserve extends ItemEnumMultiFood<ItemConserve.EnumFoodType> {
         KEROSENE(6, 1F),
         RECURSION(1, 1F),
         BARK(2, 1F);
+
+        public static final EnumFoodType[] VALUES = values();
 
         final int food;
         final float sat;

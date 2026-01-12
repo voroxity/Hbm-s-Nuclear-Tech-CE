@@ -222,7 +222,7 @@ public class TileEntityPWRController extends TileEntityMachineBase implements IT
                     int newFlux = this.sourceCount * 20;
 
                     if (typeLoaded != -1 && amountLoaded > 0) {
-                        EnumPWRFuel fuel = EnumUtil.grabEnumSafely(EnumPWRFuel.class, typeLoaded);
+                        EnumPWRFuel fuel = EnumUtil.grabEnumSafely(EnumPWRFuel.VALUES, typeLoaded);
                         double usedRods = getTotalProcessMultiplier();
                         double fluxPerRod = (this.rodCount > 0) ? this.flux / this.rodCount : 0;
                         double outputPerRod = fuel.function.effonix(fluxPerRod);

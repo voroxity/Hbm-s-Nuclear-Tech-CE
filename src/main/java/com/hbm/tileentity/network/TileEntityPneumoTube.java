@@ -249,8 +249,8 @@ public class TileEntityPneumoTube extends TileEntityMachineBase implements IGUIP
     @Override
     public void onDataPacket(@NotNull NetworkManager net, SPacketUpdateTileEntity pkt) {
         NBTTagCompound nbt = pkt.getNbtCompound();
-        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("insertionDir"));
-        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("ejectionDir"));
+        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("insertionDir"));
+        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("ejectionDir"));
         world.markBlockRangeForRenderUpdate(pos, pos);
     }
 
@@ -265,16 +265,16 @@ public class TileEntityPneumoTube extends TileEntityMachineBase implements IGUIP
     @Override
     public void handleUpdateTag(@NotNull NBTTagCompound nbt) {
         super.handleUpdateTag(nbt);
-        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("insertionDir"));
-        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("ejectionDir"));
+        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("insertionDir"));
+        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("ejectionDir"));
         world.markBlockRangeForRenderUpdate(pos, pos);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound nbt) {
         super.readFromNBT(nbt);
-        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("insertionDir"));
-        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.class, nbt.getByte("ejectionDir"));
+        this.insertionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("insertionDir"));
+        this.ejectionDir = EnumUtil.grabEnumSafely(ForgeDirection.VALUES, nbt.getByte("ejectionDir"));
         this.compair.readFromNBT(nbt, "tank");
         this.pattern.readFromNBT(nbt);
 

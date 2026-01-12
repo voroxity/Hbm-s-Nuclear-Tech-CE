@@ -13,7 +13,7 @@ import java.util.Locale;
 public class ItemPACoil extends ItemEnumMulti<ItemPACoil.EnumCoilType> {
 
     public ItemPACoil(String s) {
-        super(s, EnumCoilType.class, true, true);
+        super(s, EnumCoilType.VALUES, true, true);
         this.setMaxStackSize(1);
     }
 
@@ -34,6 +34,8 @@ public class ItemPACoil extends ItemEnumMulti<ItemPACoil.EnumCoilType> {
         NIOBIUM(1_500, 8_400, 1_500, 8_400, 21),
         BSCCO(7_500, 15_000, 7_500, 15_000, 27),
         CHLOROPHYTE(14_500, 75_000, 14_500, 75_000, 51);
+
+        public static final EnumCoilType[] VALUES = values();
 
         public final int quadMin;
         public final int quadMax;

@@ -9,12 +9,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public class BlockConcreteColoredStairs extends BlockStairsEnumMeta {
+public class BlockConcreteColoredStairs extends BlockStairsEnumMeta<EnumDyeColor> {
 
     public BlockConcreteColoredStairs() {
-        super(ModBlocks.concrete_colored, SoundType.STONE, "concrete_colored_stairs", EnumDyeColor.class, true, true);
+        super(ModBlocks.concrete_colored, SoundType.STONE, "concrete_colored_stairs", EnumDyeColor.META_LOOKUP, true, true);
         this.setCreativeTab(CreativeTabs.BUILDING_BLOCKS);
     }
+
     // to be honest, the only reason I'd do a separated class for colored concrete is because of textures - they are named like concrete_red not concrete.red
     // and I'm lazy af to rename this
     @Override

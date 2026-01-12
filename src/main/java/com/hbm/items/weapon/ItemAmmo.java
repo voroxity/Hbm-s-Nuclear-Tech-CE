@@ -104,16 +104,16 @@ public class ItemAmmo<E extends Enum<E> & IAmmoItemEnum> extends ItemEnumMulti<E
 
 	private final String altName;
 
-	public ItemAmmo(String s, Class<E> clazz) {
+	public ItemAmmo(String s, E[] clazz) {
 		this(s, clazz, "");
 	}
 
-	public ItemAmmo(String s, Class<E> clazz, String altName) {
+	public ItemAmmo(String s, E[] clazz, String altName) {
 		super(s, clazz, true, true);
 		this.setCreativeTab(null);
 		this.altName = altName;
 
-		this.textures = Arrays.stream(theEnum.getEnumConstants())
+		this.textures = Arrays.stream(theEnum)
 				.sorted(Comparator.comparing(Enum::ordinal))
 				.map(IAmmoItemEnum::getInternalName)
 				.toArray(String[]::new);

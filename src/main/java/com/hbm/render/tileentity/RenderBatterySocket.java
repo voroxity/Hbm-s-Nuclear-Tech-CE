@@ -51,7 +51,7 @@ public class RenderBatterySocket extends TileEntitySpecialRenderer<TileEntityBat
         if(render != null) {
 
             if(render.getItem() == ModItems.battery_pack) {
-                ItemBatteryPack.EnumBatteryPack pack = EnumUtil.grabEnumSafely(ItemBatteryPack.EnumBatteryPack.class, render.getItemDamage());
+                ItemBatteryPack.EnumBatteryPack pack = EnumUtil.grabEnumSafely(ItemBatteryPack.EnumBatteryPack.VALUES, render.getItemDamage());
                 bindTexture(pack.texture);
                 ResourceManager.battery_socket.renderPart(pack.isCapacitor() ? "Capacitor" : "Battery");
             } else if(render.getItem() == ModItems.battery_sc) {

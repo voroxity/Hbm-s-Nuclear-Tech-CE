@@ -15,7 +15,7 @@ import java.util.List;
 public class ItemBatterySC extends ItemEnumMulti<ItemBatterySC.EnumBatterySC> implements IBatteryItem {
 
     public ItemBatterySC(String s) {
-        super(s, EnumBatterySC.class, true, true);
+        super(s, EnumBatterySC.VALUES, true, true);
         this.setMaxStackSize(1);
         this.setCreativeTab(MainRegistry.controlTab);
     }
@@ -52,13 +52,13 @@ public class ItemBatterySC extends ItemEnumMulti<ItemBatterySC.EnumBatterySC> im
 
     @Override
     public long getMaxCharge(ItemStack stack) {
-        EnumBatterySC pack = EnumUtil.grabEnumSafely(EnumBatterySC.class, stack.getItemDamage());
+        EnumBatterySC pack = EnumUtil.grabEnumSafely(EnumBatterySC.VALUES, stack.getItemDamage());
         return pack.power;
     }
 
     @Override
     public void addInformation(ItemStack stack, World world, List<String> list, ITooltipFlag flagIn) {
-        EnumBatterySC pack = EnumUtil.grabEnumSafely(EnumBatterySC.class, stack.getItemDamage());
+        EnumBatterySC pack = EnumUtil.grabEnumSafely(EnumBatterySC.VALUES, stack.getItemDamage());
         if(pack.power > 0) list.add(TextFormatting.YELLOW + "Discharge rate: " + BobMathUtil.getShortNumber(pack.power) + "HE/t");
     }
 }

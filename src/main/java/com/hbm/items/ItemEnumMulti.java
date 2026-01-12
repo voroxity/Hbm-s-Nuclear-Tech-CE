@@ -25,7 +25,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,25 +33,25 @@ public class ItemEnumMulti<E extends Enum<E>> extends ItemBase implements IDynam
     public static final String ROOT_PATH = "items/";
     protected String[] textures;
     //hell yes, now we're thinking with enums!
-    protected Class<E> theEnum;
+    //assume the enum constants are constant
+    protected E[] theEnum;
     protected boolean multiName;
     protected boolean multiTexture;
 
-    public ItemEnumMulti(String registryName, Class<E> theEnum, boolean multiName, boolean multiTexture) {
+    public ItemEnumMulti(String registryName, E[] theEnum, boolean multiName, boolean multiTexture) {
         super(registryName);
         this.setHasSubtypes(true);
         this.theEnum = theEnum;
         this.multiName = multiName;
         this.multiTexture = multiTexture;
         INSTANCES.add(this);
-        this.textures = Arrays.stream(theEnum.getEnumConstants())
-                .sorted(Comparator.comparing(Enum::ordinal))
+        this.textures = Arrays.stream(theEnum)
                 .map(Enum::name)
                 .map(name -> registryName + getSeparationChar() + name.toLowerCase(Locale.US))
                 .toArray(String[]::new);
     }
 
-    public ItemEnumMulti(String registryName, Class<E> theEnum, boolean multiName, String texture) {
+    public ItemEnumMulti(String registryName, E[] theEnum, boolean multiName, String texture) {
         super(registryName);
         this.setHasSubtypes(true);
         this.theEnum = theEnum;
@@ -71,7 +70,7 @@ public class ItemEnumMulti<E extends Enum<E>> extends ItemBase implements IDynam
 
     @SideOnly(Side.CLIENT)
     public void registerModel() {
-        for (int i = 0; i < theEnum.getEnumConstants().length; i++) {
+        for (int i = 0; i < theEnum.length; i++) {
             ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(new ResourceLocation(Tags.MODID, ROOT_PATH + (multiTexture ? textures[i] : textures[0])), "inventory"));
         }
     }
@@ -80,7 +79,7 @@ public class ItemEnumMulti<E extends Enum<E>> extends ItemBase implements IDynam
     @SideOnly(Side.CLIENT)
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(tab)) {
-            for (int i = 0; i < theEnum.getEnumConstants().length; i++) {
+            for (int i = 0; i < theEnum.length; i++) {
                 items.add(new ItemStack(this, 1, i));
             }
         }
@@ -90,7 +89,7 @@ public class ItemEnumMulti<E extends Enum<E>> extends ItemBase implements IDynam
     public void bakeModel(ModelBakeEvent event) {
         try {
             IModel baseModel = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft", "item/generated"));
-            for (int i = 0; i < theEnum.getEnumConstants().length; i++) {
+            for (int i = 0; i < theEnum.length; i++) {
                 String textureName = multiTexture ? textures[i] : textures[0];
                 ResourceLocation spriteLoc = new ResourceLocation(Tags.MODID, ROOT_PATH + textureName);
 
@@ -118,10 +117,6 @@ public class ItemEnumMulti<E extends Enum<E>> extends ItemBase implements IDynam
 
     public boolean isMultiTexture() {
         return multiTexture;
-    }
-
-    public Class<E> getTheEnum() {
-        return theEnum;
     }
 
     @Override
