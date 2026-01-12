@@ -67,28 +67,21 @@ public class MachineBatterySocket extends BlockDummyable implements ITooltipProv
     }
 
     @Override
-    public boolean hasComparatorInputOverride() {
+    public boolean hasComparatorInputOverride(IBlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
-        if(world.getBlockMetadata(x, y, z) < 6) return 0;
-        int[] pos = this.findCore(world, x, y, z);
-        if(pos == null) return 0;
-        TileEntity te = world.getTileEntity(pos[0], pos[1], pos[2]);
-        if(!(te instanceof TileEntityBatterySocket)) return 0;
-
-        TileEntityBatterySocket battery = (TileEntityBatterySocket) te;
-        return battery.getComparatorPower();
+    public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
+        if(getMetaFromState(state) < 6) return 0;
+        TileEntity te = this.findCoreTE(world, pos);
+        if(!(te instanceof TileEntityBatterySocket socket)) return 0;
+        return socket.getComparatorPower();
     }
 
     @Override
     public void printHook(RenderGameOverlayEvent.Pre event, World world, int x, int y, int z) {
-
-        int[] pos = this.findCore(world, x, y, z);
-        if(pos == null) return;
-        TileEntity te = world.getTileEntity(new BlockPos(pos[0], pos[1], pos[2]));
+        TileEntity te = this.findCoreTE(world, x, y, z);
         if(!(te instanceof TileEntityBatterySocket socket)) return;
         if(socket.syncStack == null) return;
 
