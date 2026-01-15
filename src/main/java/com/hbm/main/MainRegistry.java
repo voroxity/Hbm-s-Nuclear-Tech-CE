@@ -254,7 +254,6 @@ public class MainRegistry {
         proxy.registerRenderInfo();
         HbmWorld.mainRegistry();
         proxy.preInit(event);
-        Library.initSuperusers();
 
         StockNodesRegister.register();
 
