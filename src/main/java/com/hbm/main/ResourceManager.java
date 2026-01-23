@@ -1920,7 +1920,7 @@ public class ResourceManager {
         //Drillgon discovered that it messes with GL context
         pauseSplash();
         if (!WaveFrontObjectVAO.uploaded) {
-            Minecraft.getMinecraft().addScheduledTask(() -> WaveFrontObjectVAO.allVBOs.forEach(WaveFrontObjectVAO::generate_vaos));
+            Minecraft.getMinecraft().addScheduledTask(() -> WaveFrontObjectVAO.allVBOs.forEach(WaveFrontObjectVAO::uploadModels));
             WaveFrontObjectVAO.uploaded = true;
         }
         resumeSplash();

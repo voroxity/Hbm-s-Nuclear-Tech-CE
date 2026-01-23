@@ -1,10 +1,10 @@
 package com.hbm.render.loader;
 
 import com.hbm.render.GLCompat;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -16,11 +16,12 @@ import static org.lwjgl.opengl.GL15.*;
 public class WaveFrontObjectVAO implements IModelCustomNamed {
 
     public static final List<WaveFrontObjectVAO> allVBOs = new ArrayList<>();
-    public static boolean uploaded = false;
     private static final int FLOAT_SIZE = 4;
     private static final int STRIDE = 9 * FLOAT_SIZE;
+    public static boolean uploaded = false;
     static int VERTEX_SIZE = 3;
     List<VBOBufferData> groups = new ArrayList<>();
+
     public WaveFrontObjectVAO(HFRWavefrontObject obj) {
         for (GroupObject g : obj.groupObjects) {
 
@@ -88,7 +89,14 @@ public class WaveFrontObjectVAO implements IModelCustomNamed {
         allVBOs.add(this);
     }
 
-    public void generate_vaos(){
+    public void uploadModels() {
+        if (!GLCompat.aplLwjglWorkaround)
+            uploadVAOs();
+    }
+
+
+    private void uploadVAOs() {
+
         for (VBOBufferData data : groups) {
             data.vaoHandle = GLCompat.genVertexArrays();
             GLCompat.bindVertexArray(data.vaoHandle);
@@ -115,9 +123,28 @@ public class WaveFrontObjectVAO implements IModelCustomNamed {
     }
 
     private void renderVBO(VBOBufferData data) {
-        GLCompat.bindVertexArray(data.vaoHandle);
-        GlStateManager.glDrawArrays(GL11.GL_TRIANGLES, 0, data.vertices);
-        GLCompat.bindVertexArray(0);
+        if(GLCompat.aplLwjglWorkaround){
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, data.vboHandle);
+            GL11.glVertexPointer(3, GL11.GL_FLOAT, STRIDE, 0L);
+            GL11.glTexCoordPointer(3, GL11.GL_FLOAT, STRIDE, 3L * Float.BYTES);
+            GL11.glNormalPointer(GL11.GL_FLOAT, STRIDE, 6L * Float.BYTES);
+
+            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+
+            GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, data.vertices);
+
+            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        } else {
+            GLCompat.bindVertexArray(data.vaoHandle);
+            GlStateManager.glDrawArrays(GL11.GL_TRIANGLES, 0, data.vertices);
+            GLCompat.bindVertexArray(0);
+        }
     }
 
     @Override
@@ -163,20 +190,20 @@ public class WaveFrontObjectVAO implements IModelCustomNamed {
         }
     }
 
+    @Override
+    public List<String> getPartNames() {
+        List<String> names = new ArrayList<String>();
+        for (VBOBufferData data : groups) {
+            names.add(data.name);
+        }
+        return names;
+    }
+
     static class VBOBufferData {
         String name;
         int vertices = 0;
         int vboHandle = -1;
         int vaoHandle = -1;
-    }
-
-    @Override
-    public List<String> getPartNames() {
-        List<String> names = new ArrayList<String>();
-        for(VBOBufferData data : groups) {
-            names.add(data.name);
-        }
-        return names;
     }
 
 
