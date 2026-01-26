@@ -238,7 +238,7 @@ public class TileEntityMachineCombustionEngine extends TileEntityMachinePollutin
 
   @Override
   public void onChunkUnload() {
-
+    super.onChunkUnload();
     if (audio != null) {
       audio.stopSound();
       audio = null;

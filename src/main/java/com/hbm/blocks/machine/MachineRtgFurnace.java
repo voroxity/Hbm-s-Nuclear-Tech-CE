@@ -125,11 +125,17 @@ public class MachineRtgFurnace extends BlockContainer {
 
 	public static void updateBlockState(boolean isProcessing, World world, BlockPos pos) {
 		IBlockState cur = world.getBlockState(pos);
-		IBlockState newState = Library.changeBlockState(ModBlocks.machine_rtg_furnace_on, ModBlocks.machine_rtg_furnace_off, cur, FACING, isProcessing);
+		TileEntity entity = world.getTileEntity(pos);
+		keepInventory = true;
+		IBlockState newState =
+				Library.changeBlockState(ModBlocks.machine_rtg_furnace_on, ModBlocks.machine_rtg_furnace_off, cur, FACING, isProcessing);
 		if (newState != null && newState != cur) {
-			keepInventory = true;
 			world.setBlockState(pos, newState, 2);
-			keepInventory = false;
+		}
+		keepInventory = false;
+		if (entity != null) {
+			entity.validate();
+			world.setTileEntity(pos, entity);
 		}
 	}
 	
