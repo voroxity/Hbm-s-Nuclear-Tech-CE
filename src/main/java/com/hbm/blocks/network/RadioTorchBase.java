@@ -26,186 +26,159 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public abstract class RadioTorchBase extends BlockContainer
-    implements IGUIProvider, ILookOverlay, ITooltipProvider {
+public abstract class RadioTorchBase extends BlockContainer implements IGUIProvider, ILookOverlay, ITooltipProvider {
 
-  public static final PropertyDirection FACING = PropertyDirection.create("facing");
-  public static final PropertyBool LIT = PropertyBool.create("lit");
+    public static final PropertyDirection FACING = PropertyDirection.create("facing");
+    public static final PropertyBool LIT = PropertyBool.create("lit");
 
-  public RadioTorchBase() {
-    super(Material.CIRCUITS);
-    setSoundType(SoundType.WOOD);
-    setDefaultState(
-        this.blockState
-            .getBaseState()
-            .withProperty(FACING, EnumFacing.UP)
-            .withProperty(LIT, false));
-  }
-
-  @Override
-  public IBlockState getStateForPlacement(
-      World worldIn,
-      BlockPos pos,
-      EnumFacing facing,
-      float hitX,
-      float hitY,
-      float hitZ,
-      int meta,
-      EntityLivingBase placer) {
-
-    return this.getDefaultState().withProperty(FACING, facing).withProperty(LIT, false);
-  }
-
-  @Override
-  protected BlockStateContainer createBlockState() {
-    return new BlockStateContainer(this, FACING, LIT);
-  }
-
-  @Override
-  public IBlockState getStateFromMeta(int meta) {
-    boolean lit = (meta & 1) == 1;
-    EnumFacing facing = EnumFacing.byIndex((meta >> 1) & 7);
-    return getDefaultState().withProperty(LIT, lit).withProperty(FACING, facing);
-  }
-
-  @Override
-  public int getMetaFromState(IBlockState state) {
-    int m = state.getValue(LIT) ? 1 : 0;
-    m |= (state.getValue(FACING).getIndex() << 1);
-    return m;
-  }
-
-  @Override
-  public IBlockState withRotation(IBlockState state, Rotation rot) {
-    return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-  }
-
-  @Override
-  public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
-    return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-  }
-
-  @Override
-  @SideOnly(Side.CLIENT)
-  public BlockRenderLayer getRenderLayer() {
-    return BlockRenderLayer.CUTOUT;
-  }
-
-  @Override
-  public boolean isOpaqueCube(IBlockState state) {
-    return false;
-  }
-
-  @Override
-  public boolean isFullCube(IBlockState state) {
-    return false;
-  }
-
-  @Override
-  @SideOnly(Side.CLIENT)
-  public boolean shouldSideBeRendered(
-      IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
-    return true;
-  }
-
-  @Override
-  public EnumBlockRenderType getRenderType(IBlockState state) {
-    return EnumBlockRenderType.MODEL;
-  }
-
-  private static AxisAlignedBB makeAABBFor(EnumFacing dir) {
-    double minX = dir.getXOffset() == 1 ? 0.0 : 0.375;
-    double minY = dir.getYOffset() == 1 ? 0.0 : 0.375;
-    double minZ = dir.getZOffset() == 1 ? 0.0 : 0.375;
-
-    double maxX = dir.getXOffset() == -1 ? 1.0 : 0.625;
-    double maxY = dir.getYOffset() == -1 ? 1.0 : 0.625;
-    double maxZ = dir.getZOffset() == -1 ? 1.0 : 0.625;
-
-    return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
-  }
-
-  @Override
-  public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-    return makeAABBFor(state.getValue(FACING));
-  }
-
-  @Override
-  public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-    return getBoundingBox(state, worldIn, pos).offset(pos);
-  }
-
-  @Nullable
-  @Override
-  public AxisAlignedBB getCollisionBoundingBox(
-      IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
-    return NULL_AABB;
-  }
-
-  @Override
-  public void neighborChanged(
-      IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
-    EnumFacing dir = state.getValue(FACING);
-    if (!canBlockStay(worldIn, pos, dir)) {
-      worldIn.destroyBlock(pos, true);
+    public RadioTorchBase() {
+        super(Material.CIRCUITS);
+        setSoundType(SoundType.WOOD);
+        setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP).withProperty(LIT, false));
     }
-  }
 
-  @Override
-  public BlockFaceShape getBlockFaceShape(
-      IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
-    return BlockFaceShape.UNDEFINED;
-  }
+    @Override
+    public @NotNull IBlockState getStateForPlacement(@NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ, int meta, @NotNull EntityLivingBase placer) {
 
-  @Override
-  public boolean canPlaceBlockOnSide(World worldIn, BlockPos pos, EnumFacing side) {
-    if (!super.canPlaceBlockOnSide(worldIn, pos, side)) return false;
-    return canBlockStay(worldIn, pos, side);
-  }
-
-  private boolean canBlockStay(World world, BlockPos pos, EnumFacing dir) {
-    BlockPos supportPos = pos.offset(dir.getOpposite());
-    IBlockState supportState = world.getBlockState(supportPos);
-    Block b = supportState.getBlock();
-
-    return b.isSideSolid(supportState, world, supportPos, dir)
-        || b.hasComparatorInputOverride(supportState)
-        || b.canProvidePower(supportState)
-        || (b.isFullCube(supportState) && !b.isAir(supportState, world, supportPos));
-  }
-
-  @Override
-  public boolean onBlockActivated(
-      World worldIn,
-      BlockPos pos,
-      IBlockState state,
-      EntityPlayer playerIn,
-      EnumHand hand,
-      EnumFacing facing,
-      float hitX,
-      float hitY,
-      float hitZ) {
-    if (worldIn.isRemote && !playerIn.isSneaking()) {
-      FMLNetworkHandler.openGui(
-          playerIn, MainRegistry.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
-      return true;
-    } else {
-      return !playerIn.isSneaking();
+        return this.getDefaultState().withProperty(FACING, facing).withProperty(LIT, false);
     }
-  }
 
-  @Override
-  public Container provideContainer(int ID, EntityPlayer player, World world, int x, int y, int z) {
-    return null;
-  }
+    @Override
+    protected @NotNull BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, LIT);
+    }
 
-  @Override
-  public void addInformation(
-      ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-    addStandardInfo(tooltip);
-  }
+    @Override
+    public @NotNull IBlockState getStateFromMeta(int meta) {
+        boolean lit = (meta & 1) == 1;
+        EnumFacing facing = EnumFacing.byIndex((meta >> 1) & 7);
+        return getDefaultState().withProperty(LIT, lit).withProperty(FACING, facing);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        int m = state.getValue(LIT) ? 1 : 0;
+        m |= (state.getValue(FACING).getIndex() << 1);
+        return m;
+    }
+
+    @Override
+    public @NotNull IBlockState withRotation(IBlockState state, Rotation rot) {
+        return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+    }
+
+    @Override
+    public @NotNull IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public @NotNull BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
+    }
+
+    @Override
+    public boolean isOpaqueCube(@NotNull IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(@NotNull IBlockState state) {
+        return false;
+    }
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(@NotNull IBlockState blockState, @NotNull IBlockAccess blockAccess, @NotNull BlockPos pos, @NotNull EnumFacing side) {
+        return true;
+    }
+
+    @Override
+    public @NotNull EnumBlockRenderType getRenderType(@NotNull IBlockState state) {
+        return EnumBlockRenderType.MODEL;
+    }
+
+    private static AxisAlignedBB makeAABBFor(EnumFacing dir) {
+        double minX = dir.getXOffset() == 1 ? 0.0 : 0.375;
+        double minY = dir.getYOffset() == 1 ? 0.0 : 0.375;
+        double minZ = dir.getZOffset() == 1 ? 0.0 : 0.375;
+
+        double maxX = dir.getXOffset() == -1 ? 1.0 : 0.625;
+        double maxY = dir.getYOffset() == -1 ? 1.0 : 0.625;
+        double maxZ = dir.getZOffset() == -1 ? 1.0 : 0.625;
+
+        return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    @Override
+    public @NotNull AxisAlignedBB getBoundingBox(IBlockState state, @NotNull IBlockAccess source, @NotNull BlockPos pos) {
+        return makeAABBFor(state.getValue(FACING));
+    }
+
+    @Override
+    public @NotNull AxisAlignedBB getSelectedBoundingBox(@NotNull IBlockState state, @NotNull World worldIn, @NotNull BlockPos pos) {
+        return getBoundingBox(state, worldIn, pos).offset(pos);
+    }
+
+    @Nullable
+    @Override
+    public AxisAlignedBB getCollisionBoundingBox(@NotNull IBlockState blockState, @NotNull IBlockAccess worldIn, @NotNull BlockPos pos) {
+        return NULL_AABB;
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull Block blockIn, @NotNull BlockPos fromPos) {
+        EnumFacing dir = state.getValue(FACING);
+        BlockPos checkPos = pos.offset(dir.getOpposite());
+        IBlockState checkState = worldIn.getBlockState(checkPos);
+        Block b = checkState.getBlock();
+
+        if (!canBlockStay(worldIn, pos, dir, b, checkPos, checkState)) {
+            worldIn.destroyBlock(pos, true);
+        }
+    }
+
+    @Override
+    public @NotNull BlockFaceShape getBlockFaceShape(@NotNull IBlockAccess worldIn, @NotNull IBlockState state, @NotNull BlockPos pos, @NotNull EnumFacing face) {
+        return BlockFaceShape.UNDEFINED;
+    }
+
+    @Override
+    public boolean canPlaceBlockOnSide(@NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumFacing side) {
+        if (!super.canPlaceBlockOnSide(worldIn, pos, side)) return false;
+        BlockPos checkPos = pos.offset(side.getOpposite());
+        IBlockState checkState = worldIn.getBlockState(checkPos);
+
+        return canBlockStay(worldIn, pos, side, checkState.getBlock(), checkPos, checkState);
+    }
+
+    public boolean canBlockStay(World world, BlockPos pos, EnumFacing dir, Block b, BlockPos checkPos, IBlockState checkState) {
+        return checkState.isSideSolid(world, checkPos, dir) || b.hasComparatorInputOverride(checkState) || b.canProvidePower(checkState) || (checkState.isFullCube() && !b.isAir(checkState, world, checkPos));
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, @NotNull BlockPos pos, @NotNull IBlockState state, @NotNull EntityPlayer playerIn, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (worldIn.isRemote && !playerIn.isSneaking()) {
+            FMLNetworkHandler.openGui(playerIn, MainRegistry.instance, 0, worldIn, pos.getX(), pos.getY(), pos.getZ());
+            return true;
+        } else {
+            return !playerIn.isSneaking();
+        }
+    }
+
+    @Override
+    public Container provideContainer(int ID, EntityPlayer player, World world, int x, int y, int z) {
+        return null;
+    }
+
+    @Override
+    public void addInformation(@NotNull ItemStack stack, @Nullable World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
+        addStandardInfo(tooltip);
+    }
 }

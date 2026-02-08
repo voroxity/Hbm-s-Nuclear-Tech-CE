@@ -12,45 +12,36 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
+import org.jetbrains.annotations.NotNull;
 
 public class RadioTorchSender extends RadioTorchRWBase {
-  public RadioTorchSender(String regName) {
-    super();
-    this.setTranslationKey(regName);
-    this.setRegistryName(regName);
+    public RadioTorchSender(String regName) {
+        super();
+        this.setTranslationKey(regName);
+        this.setRegistryName(regName);
 
-    ModBlocks.ALL_BLOCKS.add(this);
-  }
-
-  @Override
-  public TileEntity createNewTileEntity(World worldIn, int meta) {
-    return new TileEntityRadioTorchSender();
-  }
-
-  @Override
-  public boolean onBlockActivated(
-      World world,
-      BlockPos pos,
-      IBlockState state,
-      EntityPlayer player,
-      EnumHand hand,
-      EnumFacing facing,
-      float hitX,
-      float hitY,
-      float hitZ) {
-    if (world.isRemote) {
-      return true;
-    } else if (!player.isSneaking()) {
-      FMLNetworkHandler.openGui(
-          player, MainRegistry.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
-      return true;
-    } else {
-      return false;
+        ModBlocks.ALL_BLOCKS.add(this);
     }
-  }
 
-  @Override
-  public boolean getWeakChanges(IBlockAccess world, BlockPos pos) {
-    return true;
-  }
+    @Override
+    public TileEntity createNewTileEntity(@NotNull World worldIn, int meta) {
+        return new TileEntityRadioTorchSender();
+    }
+
+    @Override
+    public boolean onBlockActivated(World world, @NotNull BlockPos pos, @NotNull IBlockState state, @NotNull EntityPlayer player, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (world.isRemote) {
+            return true;
+        } else if (!player.isSneaking()) {
+            FMLNetworkHandler.openGui(player, MainRegistry.instance, 0, world, pos.getX(), pos.getY(), pos.getZ());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean getWeakChanges(@NotNull IBlockAccess world, @NotNull BlockPos pos) {
+        return true;
+    }
 }
