@@ -31,7 +31,7 @@ import com.hbm.tileentity.*;
 import com.hbm.util.BobMathUtil;
 import com.hbm.util.CrucibleUtil;
 import com.hbm.util.I18nUtil;
-import com.mojang.realmsclient.gui.ChatFormatting;
+import com.hbm.util.MutableVec3d;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -42,7 +42,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
@@ -181,7 +181,7 @@ public class TileEntityElectrolyser extends TileEntityMachineBase implements IEn
                 List<Mats.MaterialStack> toCast = new ArrayList<>();
                 toCast.add(this.leftStack);
 
-                Vec3d impact = new Vec3d(0, 0, 0);
+                MutableVec3d impact = new MutableVec3d();
                 Mats.MaterialStack didPour = CrucibleUtil.pourFullStack(world, pos.getX() + 0.5D + dir.offsetX * 5.875D, pos.getY() + 2D, pos.getZ() + 0.5D + dir.offsetZ * 5.875D, 6, true, toCast, MaterialShapes.NUGGET.q(3) * Math.max (getCycleCount() * speedLevel, 1), impact);
 
                 if(didPour != null) {
@@ -206,7 +206,7 @@ public class TileEntityElectrolyser extends TileEntityMachineBase implements IEn
                 List<Mats.MaterialStack> toCast = new ArrayList<>();
                 toCast.add(this.rightStack);
 
-                Vec3d impact = new Vec3d(0, 0, 0);
+                MutableVec3d impact = new MutableVec3d();
                 Mats.MaterialStack didPour = CrucibleUtil.pourFullStack(world, pos.getX() + 0.5D + dir.offsetX * 5.875D, pos.getY() + 2D, pos.getZ() + 0.5D + dir.offsetZ * 5.875D, 6, true, toCast, MaterialShapes.NUGGET.q(3) * Math.max (getCycleCount() * speedLevel, 1), impact);
 
                 if(didPour != null) {
@@ -560,15 +560,15 @@ public class TileEntityElectrolyser extends TileEntityMachineBase implements IEn
     public void provideInfo(ItemMachineUpgrade.UpgradeType type, int level, List<String> info, boolean extendedInfo) {
         info.add(IUpgradeInfoProvider.getStandardLabel(ModBlocks.machine_electrolyser));
         if(type == ItemMachineUpgrade.UpgradeType.SPEED) {
-            info.add(ChatFormatting.GREEN + I18nUtil.resolveKey(this.KEY_DELAY, "-" + (level * 25) + "%"));
-            info.add(ChatFormatting.RED + I18nUtil.resolveKey(this.KEY_CONSUMPTION, "+" + (level * 100) + "%"));
+            info.add(TextFormatting.GREEN + I18nUtil.resolveKey(this.KEY_DELAY, "-" + (level * 25) + "%"));
+            info.add(TextFormatting.RED + I18nUtil.resolveKey(this.KEY_CONSUMPTION, "+" + (level * 100) + "%"));
         }
         if(type == ItemMachineUpgrade.UpgradeType.POWER) {
-            info.add(ChatFormatting.GREEN + I18nUtil.resolveKey(this.KEY_CONSUMPTION, "-" + (level * 25) + "%"));
-            info.add(ChatFormatting.RED + I18nUtil.resolveKey(this.KEY_DELAY, "+" + (25) + "%"));
+            info.add(TextFormatting.GREEN + I18nUtil.resolveKey(this.KEY_CONSUMPTION, "-" + (level * 25) + "%"));
+            info.add(TextFormatting.RED + I18nUtil.resolveKey(this.KEY_DELAY, "+" + (25) + "%"));
         }
         if(type == ItemMachineUpgrade.UpgradeType.OVERDRIVE) {
-            info.add((BobMathUtil.getBlink() ? ChatFormatting.RED : ChatFormatting.DARK_GRAY) + "YES");
+            info.add((BobMathUtil.getBlink() ? TextFormatting.RED : TextFormatting.DARK_GRAY) + "YES");
         }
     }
 
