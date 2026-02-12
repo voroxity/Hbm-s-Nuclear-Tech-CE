@@ -40,7 +40,7 @@ public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResista
 	public BlockSlidingBlastDoor(Material materialIn, String s) {
 		super(materialIn, s, true);
 	}
-
+//test
 	public boolean isSealed(World world, BlockPos blockPos, EnumFacing direction){
 		if (world != null) {
 			int[] corePos = findCore(world, blockPos.getX(), blockPos.getY(), blockPos.getZ());
